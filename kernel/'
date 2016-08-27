@@ -1,0 +1,18 @@
+#include "../utils/utils.h"
+
+
+void kernel_main()
+{
+	char *vga_row = (char *) 0xF000;
+	char *vga_col = (char *) 0xF002;
+	
+	*vga_row = (short) 0x00; 
+	*vga_col = (short) 0x00;
+		while(1)
+		{
+			//do nothing	
+		}
+	
+}
+
+
