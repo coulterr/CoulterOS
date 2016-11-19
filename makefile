@@ -3,7 +3,7 @@ all: files.hdd boot.hdd RileyOS.hdd
 RileyOS.hdd: bin/RileyOS.bin
 	dd status=noxfer conv=notrunc if=bin/RileyOS.bin of=RileyOS.hdd
 bin/RileyOS.bin: obj/kernel_ep.o
-	ld -m elf_i386 -Ttext 0x100000 --oformat=binary obj/kernel_ep.o -o bin/RileyOS.bin
+	ld -m elf_i386 -Ttext 0x3B9ACA00 --oformat=binary obj/kernel_ep.o -o bin/RileyOS.bin
 obj/kernel_ep.o: kernel/kernel_ep.asm
 	nasm -f elf kernel/kernel_ep.asm -o obj/kernel_ep.o
 

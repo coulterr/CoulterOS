@@ -4,7 +4,7 @@ RileyOS Workbook
 * Use Instructions
 ** Qemu arguments/switches
 *** Enable Sound: -soundhw pcspk
-
+*** To Run: qemu-system-i386 -m 4000 -hda boot.hdd -hdb RileyOS.hdd
 
 * Working Implementation Specifics 
 ** Very Basic Overview of Boot Process
