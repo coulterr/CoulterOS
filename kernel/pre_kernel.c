@@ -38,11 +38,17 @@ int delay(int cycles)
 int kernel_main()
 {
 
+	init_mallocator((void *) 0x4000); 
 	char_queue *queue = (char_queue *) mallocate(sizeof(char_queue) + sizeof(char) * 20); 
 
 	char_queue_init(queue); 
 	
 	pio_set_queue(queue);
+
+	read_lba28(0, (void *) 0x100000); 
+
+	asm("jmp 0x100000"); 
+
 
 	while(1)
 	{

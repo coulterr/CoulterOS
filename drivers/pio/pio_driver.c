@@ -12,9 +12,9 @@ void pio_set_queue(void *q)
 }
 
 
-int read_lba28(int lba)
+int read_lba28(int lba, void *dest)
 {
-	unsigned char drive = 0x00; 
+	unsigned char drive = 0x01; 
 
 	out_byte(0x1F1, 0x00); 
 	out_byte(0x1F2, 0x01); 
@@ -27,13 +27,14 @@ int read_lba28(int lba)
 	out_byte(0x1F7, 0x20); 
 
 	while(!(in_byte(0x1F7) & 0x08)){}; 
-	read_drive();  
+	//read_drive(); 
+	read_into_mem(dest); 
 }
 
 
 int write_lba28(int lba)
 {
-	unsigned char drive = 0x00; 
+	unsigned char drive = 0x01; 
 
 	out_byte(0x1F1, 0x00); 
 	out_byte(0x1F2, 0x01); 
@@ -47,6 +48,20 @@ int write_lba28(int lba)
 
 	while(!(in_byte(0x1F7) & 0x08)){};
 	write_drive(); 
+}
+
+
+int read_into_mem(void *dest)
+{
+	int idx; 
+	for(idx = 0; idx < 512; idx+=2)
+	{
+		unsigned short tmpword = in_word(0x1F0); 
+		*((char *) dest + idx) =  (char) tmpword; 
+		*((char *) dest + idx + 1) = (char) (tmpword >> 8);
+	}
+
+	while(in_byte(0x1F7) & 0x08){};
 }
 
 int read_drive()
