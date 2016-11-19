@@ -13,7 +13,7 @@ _start:
 	call print_string
   
 	mov bx, 0x7E00									;Load kernel instructions into memory at 0x7E00
-	mov dh, 18
+	mov dh, 10
 	mov dl, [BOOT_DRIVE]
 	call load_from_disk
 

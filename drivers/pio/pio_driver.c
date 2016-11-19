@@ -3,19 +3,18 @@
 #include "pio_driver.h"
 #include "../vga/vga_driver.h"
 
-char_queue *vga_queue; 
+char_queue *queue; 
 
 
-void pio_set_vga_queue(void *q)
+void pio_set_queue(void *q)
 {
-	vga_queue = (char_queue *) q; 
+	queue = (char_queue *) q; 
 }
-
 
 
 int read_lba28(int lba)
 {
-	unsigned char drive = 0x01; 
+	unsigned char drive = 0x00; 
 
 	out_byte(0x1F1, 0x00); 
 	out_byte(0x1F2, 0x01); 
@@ -34,7 +33,7 @@ int read_lba28(int lba)
 
 int write_lba28(int lba)
 {
-	unsigned char drive = 0x01; 
+	unsigned char drive = 0x00; 
 
 	out_byte(0x1F1, 0x00); 
 	out_byte(0x1F2, 0x01); 
@@ -56,10 +55,8 @@ int read_drive()
 	for(idx = 0; idx < 256; idx++)
 	{
 		unsigned short tmpword = in_word(0x1F0); 
-		char_queue_enqueue(vga_queue, (char) tmpword); 
-		char_queue_enqueue(vga_queue, (char) (tmpword >> 8));
-		print_char(); 
-		print_char(); 
+		char_queue_enqueue(queue, (char) tmpword); 
+		char_queue_enqueue(queue, (char) (tmpword >> 8));
 	}
 
 	while(in_byte(0x1F7) & 0x08){};

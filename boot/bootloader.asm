@@ -319,7 +319,7 @@ init_pm:
 	jmp kernel_main
 	
 	ps2_isr:
-		call ps2_driver_entrypoint
+		;call ps2_driver_entrypoint
 		mov al, 0x20
 		out 0x20, al
 		out 0xA0, al

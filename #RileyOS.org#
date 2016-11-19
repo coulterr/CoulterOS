@@ -1,0 +1,178 @@
+
+RileyOS Workbook
+
+* Use Instructions
+** Qemu arguments/switches
+*** Enable Sound: -soundhw pcspk
+
+
+* Working Implementation Specifics 
+** Very Basic Overview of Boot Process
+  1. boot_sect begins at 0x7C00. Loads in bootloader and floppy / rudimentary IO drivers starting at 0x7E00
+  2. bootloader sets up GDT and rudimentary IDT, sets lgdt and lidt, then enters 32-Bit Protected Mode
+  3. bootloader sets up stack, enables interrupts
+  4. bootloader utilizes floppy drivers to load in remainder of Kernel, starting at 0x100000
+     
+** Basic Lower Memory Map
+   - boot_sect loaded in at 0x7C00
+   - bootloader loaded in at 0x7E00
+   - Keyboard ISR loaded in at 0xA000
+   - VGA Driver loaded in at 0xB000
+     
+     
+* The Global Descriptor Table
+** Summary
+   The Global Descriptor Table is the 32-Bit Protected Mode solution to memory addressing. In Protected Mode, 
+   each segment register contains a number representing an offset from the start of the GDT (linear address 
+   contained in special lgdt register), thus pointing to a particular entry. 
+
+   Each entry in the GDT is described as an 8-byte structure, consisting of the following:   
+   1. A 32-bit Base Address, defining where in memory the segment begins
+   2. A 20-bit Segment Limit, defining the size of the segment
+   3. Various flags (Priviledge Level, etc.)
+      
+   The first entry in the GDT must be a null descriptor (8 zero bytes).
+
+   The special 6-byte lgdt register points to the GDT. Higher 2 bytes describe limit (size), lower 2 bytes describe location of start.  
+      
+** Descriptor Layout
+   First 4-bytes
+    31:24  -  Base Address 31:24
+    23     -  Granularity (if set, multiplies segment limit by 4K) 
+    22     -  Default Operation Size (0 = 16-bit segment; 1 = 32-bit segment
+    21     -  64-bit Code Segment (IA-32e mode only) 
+    20     -  Available for use by system software 
+    19:16  -  Segment Limit 19:16
+    15     -  Segment Present
+    14:13  -  Descriptor Priviledge Level (0-3) 
+    12     -  Descriptor Type (0 = system/traps; 1 = code or data) 
+    11:8   -  Segment Type (11: 0 = data, 1 = code; 10: 0 = lower priviledge may not call; 9: 1 = readable; 8: Accessed (set by CPU))
+    7:0    -  Base 23:16
+
+    Second 4-bytes 
+    31:16  -  Base Address 15:0
+    15:0   -  Segment Limit 15:0
+
+** Flat Model Specification
+   Flat Model consists of 4 Segments (2 Data Segments & 2 Code Segments for each protection level (1 and 3)), 
+   each covering the entire 4GB range. 
+
+   Null Descriptor: REQUIRED
+
+   Code Segment P0
+   - Base: 0x0 
+   - Limit: 0xfffff
+   - Granularity: 1
+   - Default Operation Size: 1
+   - 64-bit Code Segment: 0
+   - Available for use by System Software (debugging?): 0
+   - Present: 1
+   - Priviledge Level: 00 (zero)
+   - Descriptor Type: 1
+   - Segment Type: 1010 (Code; Non-Conforming; Readable; Not Accessed) 
+
+   Data Segment P0
+   - Base: 0x0 
+   - Limit: 0xfffff
+   - Granularity: 1
+   - Default Operation Size: 1
+   - 64-bit Code Segment: 0
+   - Available for use by System Software (debugging?): 0
+   - Present: 1
+   - Priviledge Level: 00 (zero)
+   - Descriptor Type: 1
+   - Segment Type: 0010 (Data; Non-Conforming; Readable; Not Accessed
+
+   Code Segment P3
+   - Base: 0x0 
+   - Limit: 0xfffff
+   - Granularity: 1
+   - Default Operation Size: 1
+   - 64-bit Code Segment: 0
+   - Available for use by System Software (debugging?): 0
+   - Present: 1
+   - Priviledge Level: 11 (three) 
+   - Descriptor Type: 1
+   - Segment Type: 1010 (Code; Non-Conforming; Readable; Not Accessed
+
+   Data Segment P3
+   - Base: 0x0 
+   - Limit: 0xfffff
+   - Granularity: 1
+   - Default Operation Size: 1
+   - 64-bit Code Segment: 0
+   - Available for use by System Software (debugging?): 0
+   - Present: 1
+   - Priviledge Level: 11 (three)
+   - Descriptor Type: 1
+   - Segment Type: 0010 (Data; Non-Conforming; Readable; Not Accessed
+
+     
+* The Interrupt Descriptor Table
+** Summary
+   The Interrupt Descriptor Table maps a interrupts that might be raised by the CPU to corresponding Interrupt Service
+   Routines (ISR). Each entry is referred to as a 'Gate'. Every interrupt is assigned a number between 0 and 255. When 
+   an interrupt occurs, the CPU consults the corresponding Interrupt Descriptor (according to position), and JMPS to its 
+   ISR. 
+
+   Each entry in the IDT is described as an 8-byte structure, consisting of the following: 
+   1. 16-bit Selector, describing an entry in the GDT. (In practice, to the Kernel code segment) 
+   2. 32-bit ISR Pointer (offset from specified segment). 
+   3. Various flags (Priviledge Level, Gate Type, etc.) 
+
+   The special 6-byte lidt register points to the IDT. Higher 2 bytes describe limit (size), lower 2 bytes describe location of start. 
+   The IDT should contain a mimimum of 0x100 (256) entries. Unimplemented entries can be null-ed. 
+   
+
+* File System Basics
+** Super Block
+   Contains information concerning the entire file system: 
+     - Size of the file system
+     - Number of free blocks in the file system
+     - Index to first node of a linked list of free blocks
+     - Size of the inode list
+     - Number of free inodes
+     - Index to first node of a linked list of free inodes
+     - Lock fields for the free block and free inode list
+     - flag indicating superblock has been modified
+** Directories
+   Consist of a linear list of 16 byte entries (2 byte inode number + 14 byte file name) 
+
+   
+   
+* Work Log
+** 2016
+*** May
+**** Sunday, 29
+***** DONE Document Boot Process
+***** DONE Document GDT
+***** DONE Document IDT
+***** DONE Separate boot_sect from bootloader
+***** DONE Modify build process to concatonate boot_sect/bootloader
+***** DONE Set up new GDT
+***** DONE Set up new IDT (all null)      
+***** DONE Document more detailed lower memory plan
+*** June
+**** Wednesday, 8
+***** DONE Get keyboard interrupt working
+**** Thursday, 9
+***** DONE Get interrupt remap working
+**** Saturday, 11
+***** DONE Separate GDT/IDT, Drivers, and Kernel. Change build process accordingly.
+***** DONE Write rudimentary C libraries for basic ASM functions.
+***** DONE Work on PS/2 driver
+**** Friday, 17
+***** DONE Research standard file formats
+**** Saturday, 18
+***** DONE Get started on low level Disk IO driver
+**** Sunday, 19
+***** DONE Implement dumb memory allocation
+***** DONE Implement vga/ps2 buffer queues
+*** July
+**** Thursday, 28
+***** DONE Create IMG for storage disk
+**** Friday, 29
+***** DONE Implement basic disk write functionality
+
+* Round Two
+** 
