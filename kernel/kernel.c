@@ -7,6 +7,8 @@
 int init_kernel()
 {
 
+	init_mallocator((void *) 0x5000); 
+	
 	char_queue *ps2_queue = (char_queue *) mallocate(sizeof(char_queue) + sizeof(char) * 20); 
 	char_queue_init(ps2_queue); 
 

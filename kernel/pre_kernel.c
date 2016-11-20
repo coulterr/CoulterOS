@@ -1,4 +1,5 @@
 #include "../utils/utils.h"
+#include "../utils/mem/mallocator.h"
 #include "../utils/queue/char_queue.h"
 #include "../drivers/pio/pio_driver.h"
 
@@ -43,16 +44,12 @@ int kernel_main()
 
 	char_queue_init(queue); 
 	
-	pio_set_queue(queue);
+	pio_set_queue((void *)queue);
 
 	read_lba28(0, (void *) 0x3B9ACA00); 
 	
 	asm("mov $0x1111, %eax \t\n\
 				jmp 0x3B9ACA00");
-
-	while(1)
-	{
-	}
 
 	//write_lba28(0);
 

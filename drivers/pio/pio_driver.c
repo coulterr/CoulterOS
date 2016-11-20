@@ -1,6 +1,6 @@
 #include "../../utils/utils.h"
 #include "../../utils/queue/char_queue.h"
-#include "pio_driver.h"
+#include "../pio/pio_driver.h"
 #include "../vga/vga_driver.h"
 
 char_queue *queue; 
