@@ -10,7 +10,7 @@ int init_kernel()
 	init_vga(); 
 	init_ps2();
 
-	init_mallocator((void *) 0x5000); 
+	init_mallocator((void *) 0x4000); 
 	
 	char_queue *ps2_queue = (char_queue *) mallocate(sizeof(char_queue) + sizeof(char) * 20); 
 	char_queue_init(ps2_queue); 
@@ -25,9 +25,6 @@ int init_kernel()
 	
 	carriage_return(); 
 	print_prompt(); 
-
-	char_queue_enqueue(vga_queue, 'H'); 
-	print_char(); 
 
 	
 	while(1)
