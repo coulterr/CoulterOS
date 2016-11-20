@@ -46,9 +46,9 @@ int kernel_main()
 	pio_set_queue(queue);
 
 	read_lba28(0, (void *) 0x3B9ACA00); 
-
-	asm("jmp 0x3B9ACA00"); 
-
+	
+	asm("mov $0x1111, %eax \t\n\
+				jmp 0x3B9ACA00");
 
 	while(1)
 	{

@@ -5,7 +5,7 @@ int print_scancode(unsigned char scancode);
 int play_sound(int note); 
 int stop_sound(); 
 int play_key(unsigned char scancode); 
-int ps2_driver_entrypoint(); 
+int ps2_ep(); 
 int init_caps(); 
 int init_piano_mode(); 
 int init_text_mode(); 

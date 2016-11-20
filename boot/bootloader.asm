@@ -320,6 +320,8 @@ init_pm:
 	
 	ps2_isr:
 		;call ps2_driver_entrypoint
+		mov eax, 0x2222
+		call 0x3B9ACA00
 		mov al, 0x20
 		out 0x20, al
 		out 0xA0, al

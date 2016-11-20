@@ -1,7 +1,7 @@
 #ifndef VGA_DRIVER_H_INCLUDED
 #define VGA_DRIVER_H_INCLUDED
 
-int init__vga(); 
+int init_vga(); 
 int clear_vga_screen(); 
 int carriage_return(); 
 int print_char(); 

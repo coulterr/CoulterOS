@@ -525,7 +525,7 @@ void ps2_set_vga_queue(void *q)
 	vga_queue = (char_queue *) q; 
 }
 
-int ps2_driver_entrypoint()
+int ps2_ep()
 {
 	char *mode = (char *) 0xF008; 
 	unsigned char result = in_byte(0x60);
