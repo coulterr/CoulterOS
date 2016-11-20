@@ -173,3 +173,28 @@ RileyOS Workbook
 ***** DONE Create IMG for storage disk
 **** Friday, 29
 ***** DONE Implement basic disk write functionality
+
+
+* Christmas TODO!
+** Detect and Store info on PCI devices (for long term and immediate research) 
+** Start on realword disk utility (formatting, etc) 
+** Start on dumb round-robin scheduler (no blocking)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
